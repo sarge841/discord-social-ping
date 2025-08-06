@@ -1,4 +1,7 @@
 # Discord Social Ping Bot
+[![Build and Push Docker Image](https://github.com/sarge841/discord-social-ping/actions/workflows/build.yaml/badge.svg)](https://github.com/sarge841/discord-social-ping/actions/workflows/build.yaml)
+
+Based on and inspired by [Dan Petrolito's Blog](https://blog.danpetrolito.xyz/i-built-something-that-changed-my-friend-gro-social-fabric/).
 
 A fun Discord bot that sends notifications with random, creative messages when members join voice channels. The bot uses a variety of humorous and themed messages to announce when someone enters a voice channel.
 
@@ -7,7 +10,6 @@ A fun Discord bot that sends notifications with random, creative messages when m
 - 🎯 **Voice Channel Monitoring**: Automatically detects when members join voice channels
 - 🎲 **Random Messages**: Over 300 unique, creative join messages ranging from casual to anime-themed
 - ⏰ **Auto-cleanup**: Messages are automatically deleted after 5 minutes to keep channels clean
-- 🧪 **Test Command**: Use `asdf` command to test the bot functionality
 - 🐳 **Docker Support**: Easy deployment with Docker containers
 - 📝 **Logging**: Comprehensive logging for monitoring and debugging
 
@@ -55,23 +57,13 @@ The bot includes a variety of message themes:
 
 ### Option 2: Docker Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd discord-social-ping
-   ```
+The container image is built using the provided Dockerfile, which includes all dependencies and configurations needed to run the bot.
 
-2. **Build the Docker image**:
-   ```bash
-   docker build -t discord-social-ping .
-   ```
-
-3. **Run the container**:
-   ```bash
-   docker run -e DISCORD_TOKEN="your_bot_token_here" \
-              -e DISCORD_CHANNEL_ID="your_notification_channel_id_here" \
-              discord-social-ping
-   ```
+```bash
+docker run -e DISCORD_TOKEN="your_bot_token_here" \
+          -e DISCORD_CHANNEL_ID="your_notification_channel_id_here" \
+          ghcr.io/sarge841/sarge841/discord-social-ping:1.0
+```
 
 ## Configuration
 
@@ -97,11 +89,15 @@ The bot includes a variety of message themes:
 
 ### Bot Permissions
 
-Your bot needs the following permissions:
-- View Channels
-- Send Messages
-- Read Message History
-- Connect (to voice channels for monitoring)
+Intents:
+- Message Content Intent (to read messages)
+
+Your bot needs the following permissions when added to your server via OAuth2:
+- Scope: `bot`
+- Permissions:
+  - View Channels
+  - Send Messages
+  - Use Voice Activity
 
 ## Usage
 
@@ -110,8 +106,7 @@ Your bot needs the following permissions:
 Once the bot is running and properly configured:
 
 1. **Automatic Notifications**: The bot will automatically send a notification when someone joins a voice channel
-2. **Test Command**: Send `asdf` in any channel the bot can see to test functionality
-3. **Message Cleanup**: All notifications are automatically deleted after 5 minutes (300 seconds)
+2. **Message Cleanup**: All notifications are automatically deleted after 5 minutes (300 seconds)
 
 ### Customizing Messages
 
@@ -130,53 +125,6 @@ decided to vibe in
 ```
 
 The final message will be: `[Username] [random message] [channel name]!`
-
-## File Structure
-
-```
-discord-social-ping/
-├── main.py              # Main bot application
-├── messages.txt         # Collection of join messages
-├── requirements.txt     # Python dependencies
-├── Dockerfile          # Docker configuration
-└── README.md           # This file
-```
-
-## Logging
-
-The bot includes comprehensive logging that shows:
-- Bot startup and login status
-- Message loading information
-- Voice channel join events
-- Error messages and debugging information
-
-Logs are displayed in the console with timestamps and log levels.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Bot doesn't respond**:
-   - Check if the bot token is correct
-   - Verify the bot has proper permissions
-   - Ensure the bot is online in your Discord server
-
-2. **No voice channel notifications**:
-   - Verify the channel ID is correct
-   - Check if the bot can see the notification channel
-   - Ensure the bot has permission to send messages in that channel
-
-3. **Messages file not loading**:
-   - Check if `messages.txt` exists in the same directory as `main.py`
-   - Verify the file is readable and properly formatted
-
-### Debug Mode
-
-To enable more detailed logging, you can modify the logging level in `main.py`:
-
-```python
-logging.basicConfig(level=logging.DEBUG)
-```
 
 ## Contributing
 
