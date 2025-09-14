@@ -39,7 +39,7 @@ def is_member_joined(before, after):
     """
     return before.channel is None and after.channel is not None
 
-async def handle_voice_state_update(member, before, after, client, notification_channel_id, regular_messages):
+async def handle_voice_state_update(member, before, after, client, notification_channel_id, regular_messages, notification_role_id):
     """
     Handle the event when a member's voice state is updated.
     :param member: The member whose voice state changed.
@@ -48,6 +48,7 @@ async def handle_voice_state_update(member, before, after, client, notification_
     :param client: The Discord client instance.
     :param notification_channel_id: The ID of the notification channel.
     :param regular_messages: List of messages to choose from.
+    :param notification_role_id: Optional role ID to mention at the start of messages.
     """
     if is_member_joined(before, after):
         try:
@@ -57,21 +58,23 @@ async def handle_voice_state_update(member, before, after, client, notification_
                 return
 
             message_text = random.choice(regular_messages)
+            mention_prefix = f"<@&{notification_role_id}> " if notification_role_id else ""
             await to_channel.send(
-                f'{member.display_name} {message_text} {after.channel.name}!',
+                f'{mention_prefix}{member.display_name} {message_text} {after.channel.name}!',
                 delete_after=300
             )
             logger.info(f"Sent message for {member.display_name} joining {after.channel.name}")
         except Exception as e:
             logger.error(f"Error handling voice state update: {e}")
 
-async def handle_message(message, client, notification_channel_id, regular_messages):
+async def handle_message(message, client, notification_channel_id, regular_messages, notification_role_id):
     """
     Handle incoming messages.
     :param message: The message object.
     :param client: The Discord client instance.
     :param notification_channel_id: The ID of the notification channel.
     :param regular_messages: List of messages to choose from.
+    :param notification_role_id: Optional role ID to mention at the start of messages.
     """
     if message.author == client.user:
         return
@@ -80,8 +83,9 @@ async def handle_message(message, client, notification_channel_id, regular_messa
         try:
             c = await client.fetch_channel(notification_channel_id)
             message_text = random.choice(regular_messages)
+            mention_prefix = f"<@&{notification_role_id}> " if notification_role_id else ""
             await c.send(
-                f'{message.author} {message_text} {c.name}!',
+                f'{mention_prefix}{message.author} {message_text} {c.name}!',
                 delete_after=30
             )
             logger.info(f"Sent test message for {message.author}")
@@ -102,6 +106,13 @@ def main():
         logger.error("Environment variable 'DISCORD_CHANNEL_ID' is not set.")
         return
 
+    # Optional role mention for notifications
+    notification_role_id = os.getenv('DISCORD_NOTIFICATION_ROLE_ID', '').strip()
+    if notification_role_id:
+        logger.info(f"Role mention enabled for role ID {notification_role_id}")
+    else:
+        logger.info("No role mention configured (DISCORD_NOTIFICATION_ROLE_ID is unset or empty)")
+
     regular_messages = load_regular_messages()
 
     @client.event
@@ -110,11 +121,11 @@ def main():
 
     @client.event
     async def on_message(message):
-        await handle_message(message, client, notification_channel_id, regular_messages)
+        await handle_message(message, client, notification_channel_id, regular_messages, notification_role_id)
 
     @client.event
     async def on_voice_state_update(member, before, after):
-        await handle_voice_state_update(member, before, after, client, notification_channel_id, regular_messages)
+        await handle_voice_state_update(member, before, after, client, notification_channel_id, regular_messages, notification_role_id)
 
     token = os.getenv('DISCORD_TOKEN')
     if not token:

@@ -16,6 +16,7 @@ COPY . .
 # Declare environment variables
 ENV DISCORD_TOKEN=""
 ENV DISCORD_CHANNEL_ID=""
+ENV DISCORD_NOTIFICATION_ROLE_ID=""
 
 # Set the default command to run the application
 CMD ["python", "main.py"]

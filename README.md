@@ -73,6 +73,7 @@ docker run -e DISCORD_TOKEN="your_bot_token_here" \
 |----------|-------------|----------|
 | `DISCORD_TOKEN` | Your Discord bot token | Yes |
 | `DISCORD_CHANNEL_ID` | The channel ID where notifications will be sent | Yes |
+| `DISCORD_NOTIFICATION_ROLE_ID` | Optional role ID to mention at the start of each notification (format: a numeric role ID; the bot will send `<@&ROLE_ID>`). If unset or empty, no mention is added. | No |
 
 ### Getting Your Discord Bot Token
 
@@ -86,6 +87,12 @@ docker run -e DISCORD_TOKEN="your_bot_token_here" \
 1. Enable Developer Mode in Discord (User Settings → Advanced → Developer Mode)
 2. Right-click on the channel where you want notifications
 3. Select "Copy ID"
+
+### Getting Role ID (optional)
+
+1. Enable Developer Mode in Discord (User Settings → Advanced → Developer Mode)
+2. Right-click the role in the server settings Roles list
+3. Click "Copy ID"
 
 ### Bot Permissions
 
@@ -105,7 +112,7 @@ Your bot needs the following permissions when added to your server via OAuth2:
 
 Once the bot is running and properly configured:
 
-1. **Automatic Notifications**: The bot will automatically send a notification when someone joins a voice channel
+1. **Automatic Notifications**: The bot will automatically send a notification when someone joins a voice channel. If `DISCORD_NOTIFICATION_ROLE_ID` is set, notifications will begin with a role mention like `<@&165511591545143296>`.
 2. **Message Cleanup**: All notifications are automatically deleted after 5 minutes (300 seconds)
 
 ### Customizing Messages
@@ -124,7 +131,7 @@ just teleported to
 decided to vibe in
 ```
 
-The final message will be: `[Username] [random message] [channel name]!`
+The final message will be: `[RoleMention ]Username [random message] [channel name]!` (RoleMention appears only if `DISCORD_NOTIFICATION_ROLE_ID` is set)
 
 ## Contributing
 
